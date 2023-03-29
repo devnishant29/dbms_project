@@ -19,26 +19,42 @@ con.connect(function (error) {
 });
 
 app.post("/login", (req, res) => {
-  
   const username = req.body.username;
   const password = req.body.password;
 
-  con.query(
-    "select * from users where username = ? and userpassword = ?",
-    [username, password],
-    function (err, result) {
-      console.log(result);
-      if (err) {
-        req.setEncoding({ err: err });
-      } else {
+  if (username && password) {
+    con.query(
+      "SELECT * FROM users WHERE username = ? AND password = ?",
+      [username, password],
+      function (error, result, fields) {
+        console.log(result);
         if (result.length > 0) {
           res.send(result);
         } else {
           res.send({ message: "Wrong username or password" });
         }
       }
-    }
-  );
+    );
+  } else {
+    res.send("Please enter Username and Password!");
+    res.end();
+  }
+
+  // var sql = "SELECT * FROM users WHERE username = ? AND password = ?";
+  // var values = [[username, password]];
+  // con.query(sql, [values], function (err, result) {
+  //   console.log(result);
+  //     if (err) {
+  //       req.setEncoding({ err: err });
+  //     } else {
+  //       if (result.length > 0) {
+  //         res.send(result);
+  //       } else {
+  //         res.send({ message: "Wrong username or password" });
+  //       }
+  //     }
+  //   }
+  // );
 });
 
 app.post("/register", (req, res) => {
